@@ -1,0 +1,111 @@
+@use "sass:math";
+
+@import "mixins";
+
+$fontFamily: sans-serif;
+$fontSize: rem(14);
+
+//Основные цвета
+$mainColor: #000;
+
+//Ширина экрана
+$minWidth: 320;
+$maxWidth: 1920;
+$maxWidthContainer: 1170;
+$containerPadding: 30;
+$containerWidth: $maxWidthContainer + $containerPadding;
+
+// Брекпойнты
+$pc: em($containerWidth); // ПК, ноутбуки
+$tablet: em(991.98); // Планшеты, телефоны в горизонтальном положении
+$mobile: em(767.98); // Телефоны L
+$mobileSmall: em(479.98); // Телефоны S
+
+// Тип адаптива:
+$responsiveType: 1;
+
+// Colors
+:root {
+    // Label
+    --colors-label-primary: #10083F;
+    --colors-label-paragraph: #504D64;
+    --colors-label-secondary: #858295;
+    --colors-label-disabled: #B8B5C6;
+    --colors-label-positive: #61CA45;
+    --colors-label-negative: #FF5A43;
+    --colors-label-informative: #0C4DCE;
+    --colors-label-beta: #4A11AE;
+    --colors-label-on-color: #FFFFFF;
+    --colors-label-on-accent: #10083F;
+    --colors-label-on-neutral: #10083F;
+    --colors-label-on-inverse: #FFFFFF;
+    --colors-label-on-text: #403965;
+    --colors-label-on-common: #706B8C;
+    --colors-label-on-light-common: #e8e8eb;
+
+    // Background
+    --colors-bg-primary: #FFFFFF;
+    --colors-bg-secondary: #F3F3F5;
+    --colors-bg-dark: #10083F;
+    --colors-bg-default: #ffe14d;
+    --colors-bg-main: #f1f1f4;
+    --colors-bg-neutral: #f8f8f8;
+    --colors-bg-light-green: #e3ffd9;
+    --colors-bg-light-red: #ffd9d9;
+    --colors-bg-light-blue: #d9e4ff;
+
+    // Surface
+    --colors-surface-on-primary: #F3F3F5;
+    --colors-surface-on-secondary: #FFFFFF;
+    --colors-surface-inverse: #1F1F1F;
+    --colors-surface-negative: #FFE6E3;
+
+    // Border
+    --colors-border-default: #DBDAE2;
+    --colors-border-disabled: #E7E6EC;
+    --colors-border-negative: #FF5A43;
+    --colors-border-positive: #61CA45;
+    --colors-border-accent: #FFD400;
+    --colors-border-informative: #0C4DCE;
+    --color-border-primary: #a8a6b3;
+    --color-border-light: #ececee;
+
+    // Action
+    --colors-action-accent-default: #FFDD33;
+    --colors-action-accent-hovered: #FFD400;
+    --colors-action-accent-pressed: #FAC400;
+    --colors-action-accent-disabled: #FFEE99;
+    --colors-action-neutral-default: #E2E1E8;
+    --colors-action-neutral-hovered: #CFCED9;
+    --colors-action-neutral-pressed: #C3C1CF;
+    --colors-action-neutral-disabled: #EEEEF2;
+    --colors-action-negative-default: #FF5A43;
+    --colors-action-negative-hovered: #FF6B56;
+    --colors-action-negative-pressed: #E5513C;
+    --colors-action-negative-disabled: #FFBDB4;
+
+    /* Decorative Colors */
+
+    // Surface
+    --colors-decorative-surface-green: #E8F7E3;
+    --colors-decorative-surface-red: #FFEFED;
+    --colors-decorative-surface-blue: #E7EEFB;
+    --colors-decorative-surface-yellow: #fff1b4;
+    --colors-decorative-surface-orange: #FFE6D3;
+    --colors-decorative-surface-violet: #EEE2FB;
+    --colors-decorative-surface-teal: #DFFFF9;
+    --colors-decorative-surface-raspberry: #FFDFED;
+    --colors-decorative-surface-grey: #F3F3F4;
+
+    // Label
+    --colors-decorative-label-green: #285B1A;
+    --colors-decorative-label-red: #DB1B00;
+    --colors-decorative-label-blue: #0C4DCE;
+    --colors-decorative-label-yellow: #5A5B1A;
+    --colors-decorative-label-orange: #A84600;
+    --colors-decorative-label-violet: #4A11AE;
+    --colors-decorative-label-teal: #00735E;
+    --colors-decorative-label-raspberry: #A00046;
+    --colors-decorative-label-dark-grey: #504D64;
+    --colors-decorative-label-light-grey: #858295;
+}
