@@ -14,7 +14,8 @@ export default defineConfig({
   plugins: [
     vue(),
     ElementPlus({
-      useSource: true
+      useSource: true,
+      defaultLocale: 'ru'
     }),
     AutoImport({
       resolvers: [ElementPlusResolver()]

@@ -6,7 +6,10 @@ import { config } from '../config'
 import type { AxiosInstance } from 'axios'
 
 const axiosInstance = axios.create({
-  baseURL: config.BACKEND_URL
+  baseURL: config.BACKEND_URL,
+  headers: {
+    Authorization: 'Bearer ' + localStorage.getItem('token')
+  }
 })
 
 type AxiosInstanceWrapper = Pick<AxiosInstance, 'get' | 'post' | 'put' | 'delete'>
@@ -19,5 +22,12 @@ const createApi = (axios: AxiosInstance): AxiosInstanceWrapper => {
     delete: (url, config) => withAbort(axios.delete)(url, config)
   }
 }
+
+axiosInstance.interceptors.request.use(function (config) {
+  const token = localStorage.getItem('token') || ''
+  config.headers.Authorization = 'Bearer ' + token
+
+  return config
+})
 
 export default createApi(axiosInstance)

@@ -33,6 +33,9 @@
         >
           <li
             class="nav-list__item"
+            :class="{
+              'nav-list__item--active': leftNavigationItem.routeName === $route.name
+            }"
             v-if="leftNavigationItem.show"
             @click="leftNavigationItem.clickHandler"
             @keydown.enter="leftNavigationItem.clickHandler"
@@ -55,6 +58,7 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import SvgIcons from '../components/SvgIcons.vue'
 
 const props = defineProps({
@@ -67,41 +71,56 @@ const toggleSidebar = () => {
   emit('toggleShowSidebar', !props.showSidebarMenu)
 }
 
+const router = useRouter()
+
 const leftNavigationItems = computed(() => [
   {
     name: 'Продать',
     icon: 'sell',
     iconSize: '25px',
     show: true,
-    clickHandler: () => {}
+    routeName: 'Sell',
+    clickHandler: () => {
+      router.push({
+        name: 'Sell'
+      })
+    }
   },
   {
     name: 'Типы товаров',
     icon: 'types',
     iconSize: '25px',
     show: true,
-    clickHandler: () => {}
-  },
-  {
-    name: 'Изображения товаров',
-    icon: 'images',
-    iconSize: '22px',
-    show: true,
-    clickHandler: () => {}
+    routeName: 'Types',
+    clickHandler: () => {
+      router.push({
+        name: 'Types'
+      })
+    }
   },
   {
     name: 'Продажа',
     icon: 'sell-list',
     iconSize: '25px',
     show: true,
-    clickHandler: () => {}
+    routeName: 'SellList',
+    clickHandler: () => {
+      router.push({
+        name: 'SellList'
+      })
+    }
   },
   {
     name: 'Продукты',
     icon: 'products',
     iconSize: '25px',
     show: true,
-    clickHandler: () => {}
+    routeName: 'Products',
+    clickHandler: () => {
+      router.push({
+        name: 'Products'
+      })
+    }
   }
 ])
 </script>
@@ -191,8 +210,12 @@ const leftNavigationItems = computed(() => [
     height: rem(50);
     cursor: pointer;
 
-    &:hover {
+    &:hover:not(.nav-list__item--active) {
       background: rgba(0, 0, 0, 0.04);
+    }
+
+    &--active {
+      background: var(--colors-action-accent-default);
     }
   }
 

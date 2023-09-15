@@ -3,15 +3,34 @@
     <div class="top-navigation__actions top-actions">
       <div class="top-actions__user">
         <el-tooltip placement="bottom" content="Меню" :show-after="150">
-          <el-button type="primary" size="small" class="top-actions__avatar" icon-type round>
-            NA
-          </el-button>
+          <el-dropdown trigger="click">
+            <el-button type="primary" size="small" class="top-actions__avatar" icon-type round>
+              NA
+            </el-button>
+
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item @click="logout">Выйти</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
         </el-tooltip>
       </div>
     </div>
   </header>
 </template>
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+const logout = () => {
+  localStorage.removeItem('token')
+  router.push({
+    name: 'Login'
+  })
+}
+</script>
 <style lang="scss" scoped>
 .top-navigation {
   padding: 0 rem(28);
