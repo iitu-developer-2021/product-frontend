@@ -102,7 +102,7 @@
             >
               Завершить
             </el-button>
-            <el-button type="success" :disabled="isCompletedButtonDisabled">
+            <el-button type="success" :disabled="isCompletedButtonDisabled" @click="saveAndPrint">
               Завершить и печатать
             </el-button>
           </div>
@@ -118,6 +118,12 @@ import { vMaska } from 'maska'
 import { ElNotification } from 'element-plus'
 import moment from 'moment'
 import type { Type } from '@/types'
+//@ts-ignore
+import pdfMake from 'pdfmake/build/pdfmake'
+//@ts-ignore
+import pdfFonts from 'pdfmake/build/vfs_fonts'
+pdfMake.vfs = pdfFonts.pdfMake.vfs
+
 //@ts-ignore
 import * as api from '@/api/requests.ts'
 
@@ -289,6 +295,41 @@ const completeListener = async () => {
 const isCompletedButtonDisabled = computed(
   () => !goods.value.every((good) => good.name && good.sellPrice && good.count > 0)
 )
+
+const saveAndPrint = () => {
+  const mappedGoods = goods.value.map((good, index) => [
+    (index + 1).toString(),
+    good.name.toString(),
+    good.count.toString(),
+    (+good.sellPrice).toFixed(2).toString(),
+    (good.count * +good.sellPrice).toFixed(2).toString()
+  ])
+  const docDefinition = {
+    content: [
+      { text: 'Расходная накладная', style: 'header' },
+      {
+        style: 'check',
+        table: {
+          widths: ['auto', '*', 'auto', 'auto', 'auto'],
+          body: [['№', 'Товар', 'Количество', 'Цена', 'Сумма'], ...mappedGoods]
+        }
+      }
+    ],
+    styles: {
+      header: {
+        fontSize: 18,
+        bold: true,
+        margin: [0, 0, 0, 10]
+      },
+      tableHeader: {
+        bold: true,
+        fontSize: 13,
+        color: 'black'
+      }
+    }
+  }
+  pdfMake.createPdf(docDefinition).print()
+}
 
 onMounted(() => {
   fetchProducts()
