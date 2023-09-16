@@ -55,7 +55,7 @@
             </template>
           </el-table-column>
 
-          <el-table-column label="Цена за единицу">
+          <el-table-column label="Цена">
             <template #default="scope">
               <el-input
                 v-maska
@@ -66,7 +66,21 @@
             </template>
           </el-table-column>
 
-          <el-table-column label="Общая цена" width="150" align="right">
+          <el-table-column label="Измерение" width="150" align="center">
+            <template #default="scope">
+              <div v-if="!scope.row.isManual">
+                {{ getMeasurement(scope.row) }}
+              </div>
+              <el-switch
+                v-else
+                v-model="scope.row.manualWeightProduct"
+                active-text="кг"
+                inactive-text="шт"
+              />
+            </template>
+          </el-table-column>
+
+          <el-table-column label="Сумма" width="150" align="right">
             <template #default="scope">
               {{
                 scope.row.count && scope.row.sellPrice
@@ -75,6 +89,7 @@
               }}
             </template>
           </el-table-column>
+
           <el-table-column align="right" width="100">
             <template #default="scope">
               <el-popconfirm
@@ -267,7 +282,7 @@ const completeListener = async () => {
           count: good.count.toString(),
           totalPrice: (good.count * +good.sellPrice).toString(),
           typeName: '',
-          isWeightProduct: false,
+          isWeightProduct: good.manualWeightProduct!,
           clientSellsId: clientSellId
         })
       }
@@ -306,13 +321,21 @@ const saveAndPrint = () => {
   ])
   const docDefinition = {
     content: [
-      { text: 'Расходная накладная', style: 'header' },
+      { text: 'Расходная накладная ' + moment().format('DD.MM.YYYY HH:mm'), style: 'header' },
+      { text: 'Магазин: Рай-Шатыр', style: 'text' },
       {
-        style: 'check',
+        text: 'Адрес: Республика Казахстан, Костанайская область, Складская, база ОРТ, дом 4а',
+        style: 'text'
+      },
+      {
         table: {
           widths: ['auto', '*', 'auto', 'auto', 'auto'],
           body: [['№', 'Товар', 'Количество', 'Цена', 'Сумма'], ...mappedGoods]
         }
+      },
+      {
+        text: 'Итог: ' + totalPrice.value.toFixed(2).toString(),
+        style: 'total'
       }
     ],
     styles: {
@@ -325,12 +348,32 @@ const saveAndPrint = () => {
         bold: true,
         fontSize: 13,
         color: 'black'
+      },
+      text: {
+        fontSize: 12,
+        color: 'black',
+        margin: [0, 0, 0, 7]
+      },
+      total: {
+        bold: true,
+        fontSize: 13,
+        color: 'black',
+        margin: [0, 15, 0, 0]
       }
     }
   }
+  completeListener()
   pdfMake.createPdf(docDefinition).print()
 }
 
+const getMeasurement = (good: Sell) => {
+  const foundProduct = products.value.find((product) => product.name === good.name)
+  if (foundProduct) {
+    return foundProduct.isWeightProduct ? 'кг' : 'шт'
+  } else {
+    return '-'
+  }
+}
 onMounted(() => {
   fetchProducts()
   fetchTypes()

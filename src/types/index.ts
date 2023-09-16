@@ -21,6 +21,7 @@ export type Sell = {
   isManual: boolean
   createdAt?: string
   updatedAt?: string
+  manualWeightProduct?: boolean
 }
 
 export type ClientSell = {

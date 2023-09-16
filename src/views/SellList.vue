@@ -101,7 +101,7 @@ const fetchClientSells = async () => {
   }
 }
 
-const pageSize = ref(5)
+const pageSize = ref(10)
 const currentPage = ref(1)
 const date = ref('')
 
