@@ -7,6 +7,8 @@ export type Product = {
   retailPrice: string
   price: string
   isWeightProduct: boolean
+  createdAt?: string
+  updatedAt?: string
 }
 
 export type Sell = {

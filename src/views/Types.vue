@@ -6,7 +6,12 @@
         <el-button type="primary" @click="addTypeListener">Добавить тип</el-button>
       </div>
 
-      <el-table v-loading="typeLoading" :data="typesWithPagination" empty-text="Таблица пустая">
+      <el-table
+        v-loading="typeLoading"
+        :data="typesWithPagination"
+        empty-text="Таблица пустая"
+        height="500"
+      >
         <el-table-column prop="id" label="ID" width="150" />
         <el-table-column prop="name" label="Название типа" />
         <el-table-column align="right">
@@ -246,7 +251,5 @@ onMounted(() => {
 
 .pagination {
   margin-top: rem(20);
-  display: flex;
-  justify-content: flex-end;
 }
 </style>

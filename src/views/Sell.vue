@@ -51,7 +51,7 @@
 
           <el-table-column label="Количество" width="180">
             <template #default="scope">
-              <el-input-number v-model="scope.row.count" :min="1" :max="1000" />
+              <el-input-number v-model="scope.row.count" :min="0" :max="100000" />
             </template>
           </el-table-column>
 
@@ -92,20 +92,13 @@
 
           <el-table-column align="right" width="100">
             <template #default="scope">
-              <el-popconfirm
-                width="220"
-                confirm-button-text="Удалить"
-                cancel-button-text="Нет, cпасибо"
-                title="Вы точно хотите удалить тип ?"
-                @confirm="deleteSell(scope.row.id)"
-              >
-                <template #reference>
-                  <el-button size="small" type="danger"> Удалить </el-button>
-                </template>
-              </el-popconfirm>
+              <el-button size="small" type="danger" @click="deleteSell(scope.row.id)">
+                Удалить
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
+
         <div class="bottom" v-if="goods.length > 0">
           <p class="total"><strong>Итоговая стоимость:</strong> {{ totalPrice }} тенге</p>
           <div class="bottom__actions">
@@ -121,6 +114,16 @@
               Завершить и печатать
             </el-button>
           </div>
+        </div>
+        <div class="money" v-if="goods.length > 0">
+          <el-input
+            class="money__input"
+            placeholder="Внесенная сумма"
+            v-maska
+            data-maska="#############"
+            v-model="gaveMoney"
+          />
+          <strong>Сдача: {{ gaveMoney ? +gaveMoney - totalPrice : '0' }}</strong>
         </div>
       </div>
     </div>
@@ -141,6 +144,8 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs
 
 //@ts-ignore
 import * as api from '@/api/requests.ts'
+
+const gaveMoney = ref('')
 
 const isCheap = ref(false)
 const goods = ref<Sell[]>([])
@@ -259,7 +264,7 @@ const completeListener = async () => {
   try {
     completeLoading.value = true
     const name = `Продажа ${moment().format('DD-MM-YYYY HH:mm:ss')}`
-    const response = await api.createClientSell(name, totalPrice.value.toString())
+    const response = await api.createClientSell(name, totalPrice.value.toFixed(2).toString())
     const clientSellId = response.result.clientSell.id
     const goodsPromise = goods.value.map((good) => {
       const currentProduct = products.value.find((product) => product.name === good.name)
@@ -269,7 +274,7 @@ const completeListener = async () => {
           sellPrice: good.sellPrice,
           productPrice: currentProduct.price,
           count: good.count.toString(),
-          totalPrice: (good.count * +good.sellPrice).toString(),
+          totalPrice: (good.count * +good.sellPrice).toFixed(2).toString(),
           typeName: types.value.find((type) => type.id === currentProduct.typesId)?.name || '',
           isWeightProduct: currentProduct.isWeightProduct,
           clientSellsId: clientSellId
@@ -280,7 +285,7 @@ const completeListener = async () => {
           sellPrice: good.sellPrice,
           productPrice: good.sellPrice,
           count: good.count.toString(),
-          totalPrice: (good.count * +good.sellPrice).toString(),
+          totalPrice: (good.count * +good.sellPrice).toFixed(2).toString(),
           typeName: '',
           isWeightProduct: good.manualWeightProduct!,
           clientSellsId: clientSellId
@@ -312,10 +317,17 @@ const isCompletedButtonDisabled = computed(
 )
 
 const saveAndPrint = () => {
+  const getMeasurement = (isWeightProduct: boolean) => {
+    return isWeightProduct ? 'кг' : 'шт'
+  }
   const mappedGoods = goods.value.map((good, index) => [
     (index + 1).toString(),
     good.name.toString(),
-    good.count.toString(),
+    `${good.count.toString()} ${
+      !good.isManual
+        ? getMeasurement(good.isWeightProduct)
+        : getMeasurement(good.manualWeightProduct!)
+    }`,
     (+good.sellPrice).toFixed(2).toString(),
     (good.count * +good.sellPrice).toFixed(2).toString()
   ])
@@ -363,7 +375,7 @@ const saveAndPrint = () => {
     }
   }
   completeListener()
-  pdfMake.createPdf(docDefinition).print()
+  pdfMake.createPdf(docDefinition as any).print()
 }
 
 const getMeasurement = (good: Sell) => {
@@ -427,6 +439,17 @@ onMounted(() => {
 
   &__actions {
     margin-left: auto;
+  }
+}
+
+.money {
+  display: flex;
+  align-items: center;
+  margin-top: rem(15);
+  gap: rem(10);
+
+  &__input {
+    flex: 0 0 rem(200);
   }
 }
 </style>

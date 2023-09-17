@@ -14,7 +14,12 @@
           />
         </div>
       </div>
-      <el-table :data="clientSellsWithPagination" :border="true" empty-text="Нет данных">
+      <el-table
+        :data="clientSellsWithPagination"
+        :border="true"
+        empty-text="Нет данных"
+        height="500"
+      >
         <el-table-column type="expand">
           <template #default="props">
             <div>
@@ -35,6 +40,7 @@
             </div>
           </template>
         </el-table-column>
+        <el-table-column label="ID" prop="id" width="60" align="center" />
         <el-table-column label="Название" prop="name" />
         <el-table-column label="Дата покупки">
           <template #default="scope">
@@ -42,6 +48,23 @@
           </template>
         </el-table-column>
         <el-table-column label="Общая сумма" prop="totalPrice" />
+        <el-table-column align="right" width="100">
+          <template #default="scope">
+            <el-popconfirm
+              width="220"
+              confirm-button-text="Удалить"
+              cancel-button-text="Нет, cпасибо"
+              title="Вы точно хотите удалить запись ?"
+              @confirm="deleteClientSell(scope.row.id)"
+            >
+              <template #reference>
+                <el-button size="small" type="danger" :loading="deleteClientSellLoading">
+                  Удалить
+                </el-button>
+              </template>
+            </el-popconfirm>
+          </template>
+        </el-table-column>
       </el-table>
 
       <el-pagination
@@ -109,6 +132,30 @@ const dateChangeListener = () => {
   currentPage.value = 1
 }
 
+const deleteClientSellLoading = ref(false)
+
+const deleteClientSell = async (id: number) => {
+  try {
+    deleteClientSellLoading.value = true
+    await api.deleteClientSell(id)
+    ElNotification({
+      title: 'Успех!',
+      message: 'Тип успешно удален',
+      type: 'success'
+    })
+    clientSells.value = clientSells.value.filter((clientSell) => clientSell.id !== id)
+  } catch (e) {
+    console.error((e as any).message)
+    ElNotification({
+      title: 'Ошибка!',
+      message: 'Не удалось удалить запись',
+      type: 'error'
+    })
+  } finally {
+    deleteClientSellLoading.value = false
+  }
+}
+
 onMounted(() => {
   fetchClientSells()
 })
@@ -153,7 +200,5 @@ onMounted(() => {
 
 .pagination {
   margin-top: rem(20);
-  display: flex;
-  justify-content: flex-end;
 }
 </style>
