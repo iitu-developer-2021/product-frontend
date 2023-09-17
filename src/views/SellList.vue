@@ -26,15 +26,15 @@
               <h3 class="sell-list__subtitle">Список продаж</h3>
               <el-table :data="props.row.sells" :border="false">
                 <el-table-column label="Название" prop="name" width="400" />
+                <el-table-column label="Тип товара" prop="typeName" />
+                <el-table-column label="Цена Закупа" prop="productPrice" />
+                <el-table-column label="Проданная цена" prop="sellPrice" />
+                <el-table-column label="Количество" prop="count" />
                 <el-table-column label="Измерение">
                   <template #default="scope">
                     {{ scope.row.isWeightProduct ? 'кг' : 'шт' }}
                   </template>
                 </el-table-column>
-                <el-table-column label="Тип товара" prop="typeName" />
-                <el-table-column label="Цена Закупа" prop="productPrice" />
-                <el-table-column label="Проданная цена" prop="sellPrice" />
-                <el-table-column label="Количество" prop="count" />
                 <el-table-column label="Общая цена" prop="totalPrice" />
               </el-table>
             </div>

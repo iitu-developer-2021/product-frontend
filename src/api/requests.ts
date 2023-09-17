@@ -6,6 +6,7 @@ const URLS = {
   getProducts: '/products',
   createProducts: '/products',
   deleteProducts: '/products',
+  editProducts: '/products',
   getTypes: '/types',
   createTypes: '/types',
   editType: '/types',
@@ -32,6 +33,23 @@ export const createProduct = (
     .post(
       URLS.createProducts,
       { name, wholesalePrice, retailPrice, price, isWeightProduct, typesId },
+      {}
+    )
+    .then((response) => response.data)
+
+export const editProduct = (
+  id: number,
+  name: string,
+  wholesalePrice: string,
+  retailPrice: string,
+  price: string,
+  isWeightProduct: boolean,
+  typesId: number
+): Promise<Response<{ product: Product }>> =>
+  axios
+    .post(
+      URLS.editProducts,
+      { id, name, wholesalePrice, retailPrice, price, isWeightProduct, typesId },
       {}
     )
     .then((response) => response.data)

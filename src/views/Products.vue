@@ -3,7 +3,7 @@
     <div class="products__wrapper">
       <div class="products__top">
         <h1 class="types__title">Список Продуктов</h1>
-        <el-button type="primary" @click="showModal = true">Добавить продукт</el-button>
+        <el-button type="primary" @click="addProductListener">Добавить продукт</el-button>
       </div>
       <div class="filters">
         <el-input class="filters__input" placeholder="Поиск" v-model="filter.search" />
@@ -36,7 +36,9 @@
         </el-table-column>
         <el-table-column align="right" width="220">
           <template #default="scope">
-            <el-button size="small">Редактировать</el-button>
+            <el-button size="small" @click="editProductListener(scope.row)"
+              >Редактировать</el-button
+            >
             <el-popconfirm
               width="220"
               confirm-button-text="Удалить"
@@ -115,7 +117,7 @@
           <el-button
             type="primary"
             @click="
-              createProduct(
+              saveListener(
                 modalForm.name,
                 modalForm.wholesalePrice!,
                 modalForm.retailPrice!,
@@ -225,11 +227,11 @@ const fetchTypes = async () => {
 
 const modalForm = reactive({
   name: '',
-  wholesalePrice: null,
-  retailPrice: null,
-  price: null,
+  wholesalePrice: null as string | null,
+  retailPrice: null as string | null,
+  price: null as string | null,
   isWeightProduct: false,
-  typesId: null
+  typesId: null as number | null
 })
 
 const showModal = ref(false)
@@ -304,6 +306,94 @@ const deleteProduct = async (id: number) => {
     })
   } finally {
     deleteProductLoading.value = false
+  }
+}
+
+let modalType: 'add' | 'edit' = 'add'
+let tempEditProduct: Product | null = null
+
+const editProductListener = (product: Product) => {
+  tempEditProduct = product
+  console.log(product)
+  modalForm.name = product.name
+  modalForm.isWeightProduct = product.isWeightProduct
+  modalForm.price = product.price
+  modalForm.retailPrice = product.retailPrice
+  modalForm.wholesalePrice = product.wholesalePrice
+  modalForm.typesId = product.typesId
+  modalType = 'edit'
+  showModal.value = true
+}
+
+const addProductListener = () => {
+  tempEditProduct = null
+  clearForm()
+  modalType = 'add'
+  showModal.value = true
+}
+
+const saveListener = (
+  name: string,
+  wholesalePrice: string,
+  retailPrice: string,
+  price: string,
+  isWeightProduct: boolean,
+  typesId: number
+) => {
+  if (modalType === 'add') {
+    createProduct(name, wholesalePrice, retailPrice, price, isWeightProduct, typesId)
+  } else {
+    editProduct(name, wholesalePrice, retailPrice, price, isWeightProduct, typesId)
+  }
+}
+
+const editProductLoading = ref(false)
+
+const editProduct = async (
+  name: string,
+  wholesalePrice: string,
+  retailPrice: string,
+  price: string,
+  isWeightProduct: boolean,
+  typesId: number
+) => {
+  try {
+    editProductLoading.value = true
+    const response = await api.editProduct(
+      tempEditProduct!.id,
+      name,
+      wholesalePrice,
+      retailPrice,
+      price,
+      isWeightProduct,
+      typesId
+    )
+    ElNotification({
+      title: 'Успех!',
+      message: 'Продукт успешно отредактирован',
+      type: 'success'
+    })
+    const currentProduct = products.value.findIndex(
+      (type) => type.id === response.result.product.id
+    )
+    products.value[currentProduct].name = name
+    products.value[currentProduct].wholesalePrice = wholesalePrice
+    products.value[currentProduct].retailPrice = retailPrice
+    products.value[currentProduct].price = price
+    products.value[currentProduct].isWeightProduct = isWeightProduct
+    products.value[currentProduct].typesId = typesId
+    clearForm()
+    showModal.value = false
+    tempEditProduct = null
+  } catch (e) {
+    console.error((e as any).message)
+    ElNotification({
+      title: 'Ошибка!',
+      message: 'Не удалось отредактировать тип',
+      type: 'error'
+    })
+  } finally {
+    editProductLoading.value = false
   }
 }
 
