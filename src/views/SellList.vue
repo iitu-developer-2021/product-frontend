@@ -14,6 +14,7 @@
           />
         </div>
       </div>
+
       <el-table
         :data="clientSellsWithPagination"
         :border="true"
@@ -35,7 +36,11 @@
                     {{ scope.row.isWeightProduct ? 'кг' : 'шт' }}
                   </template>
                 </el-table-column>
-                <el-table-column label="Общая цена" prop="totalPrice" />
+                <el-table-column label="Общая цена">
+                  <template #default="scope">
+                    {{ +scope.row.count * +scope.row.sellPrice }}
+                  </template>
+                </el-table-column>
               </el-table>
             </div>
           </template>

@@ -89,7 +89,6 @@ export const createSell = ({
   sellPrice,
   productPrice,
   count,
-  totalPrice,
   typeName,
   isWeightProduct,
   clientSellsId
@@ -98,7 +97,6 @@ export const createSell = ({
   sellPrice: string
   productPrice: string
   count: string
-  totalPrice: string
   typeName: string
   isWeightProduct: boolean
   clientSellsId: number
@@ -111,7 +109,6 @@ export const createSell = ({
         sellPrice,
         productPrice,
         count,
-        totalPrice,
         typeName,
         isWeightProduct,
         clientSellsId

@@ -1,7 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteLocationNormalized, NavigationGuardNext } from 'vue-router'
+
 //@ts-ignore
-import Sell from '../views/Sell.vue'
+import Sell from '../views/sell/Sell.vue'
+
 //@ts-ignore
 import Products from '../views/Products.vue'
 //@ts-ignore

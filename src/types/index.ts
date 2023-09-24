@@ -7,6 +7,8 @@ export type Product = {
   retailPrice: string
   price: string
   isWeightProduct: boolean
+  count: number
+  barcode?: string
   createdAt?: string
   updatedAt?: string
 }
@@ -17,13 +19,17 @@ export type Sell = {
   sellPrice: string
   productPrice: string
   count: number
-  totalPrice: string
   typeName: string
   isWeightProduct: boolean
   isManual: boolean
   createdAt?: string
   updatedAt?: string
-  manualWeightProduct?: boolean
+  remainedCount?: number
+}
+
+export type Type = {
+  id: number
+  name: string
 }
 
 export type ClientSell = {
@@ -38,9 +44,4 @@ export type Response<T> = {
   message: string
   status: boolean
   result: T
-}
-
-export type Type = {
-  id: number
-  name: string
 }
