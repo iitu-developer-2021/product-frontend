@@ -1,11 +1,11 @@
 <template>
   <div class="products">
-    <div class="products__wrapper">
+    <div class="products__body">
       <div class="products__top">
-        <h1 class="types__title">Список Продуктов</h1>
-        <el-button type="primary" @click="addProductListener">Добавить продукт</el-button>
+        <h1 class="products__titles">Список типов товара</h1>
+        <el-button type="primary" @click="showAddModal = true"> Добавить тип </el-button>
       </div>
-      <div class="filters">
+      <div class="products__filters filters">
         <el-input class="filters__input" placeholder="Поиск" v-model="filter.search" />
         <el-select
           class="filters__select"
@@ -18,15 +18,14 @@
         </el-select>
       </div>
 
-      <el-table
-        :data="paginateProduct(filteredProducts)"
-        style="width: 100%"
-        height="500"
-        empty-text="Таблица пустая"
-      >
+      <h3 class="totalCount">
+        Общая сумма за выбранный продукт: <strong>{{ totalPrice }}</strong>
+      </h3>
+
+      <el-table :data="paginateProduct(filteredProducts)" height="500" empty-text="Таблица пустая">
         <el-table-column prop="id" label="ID" width="50" />
         <el-table-column prop="barcode" label="Штрих код" />
-        <el-table-column prop="name" label="Название товара" width="400" />
+        <el-table-column prop="name" label="Название товара" width="300" />
         <el-table-column prop="price" label="Цена закупа" />
         <el-table-column prop="wholesalePrice" label="Оптовая цена" />
         <el-table-column prop="retailPrice" label="Розничная цена" />
@@ -37,9 +36,7 @@
         </el-table-column>
         <el-table-column align="right" width="220">
           <template #default="scope">
-            <el-button size="small" @click="editProductListener(scope.row)">
-              Редактировать
-            </el-button>
+            <el-button size="small" @click="setEditValues(scope.row)"> Редактировать </el-button>
             <el-popconfirm
               width="220"
               confirm-button-text="Удалить"
@@ -68,102 +65,59 @@
         :total="filteredProducts.length"
       />
 
-      <el-dialog v-model="showModal" align-center class="dialog" @closed="clearForm">
-        <h1 class="dialog__title">Добавление нового продукта</h1>
-        <el-input placeholder="Наименование" v-model="modalForm.name" class="dialog__input" />
-        <el-input placeholder="Штрих код" v-model="modalForm.barcode" class="dialog__input" />
-        <el-input
-          v-maska
-          data-maska="#############"
-          placeholder="Оптовая цена"
-          v-model="modalForm.wholesalePrice"
-          class="dialog__input"
-        />
+      <products-modal
+        title="Добавление нового продукта"
+        v-model="showAddModal"
+        v-model:modal-form="addForm"
+        @cancel="addForm = initDefaultForm()"
+        @confirm="
+          createProduct({
+            typesId: addForm.typesId!,
+            name: addForm.name,
+            wholesalePrice: +addForm.wholesalePrice,
+            retailPrice: +addForm.retailPrice,
+            price: +addForm.price,
+            isWeightProduct: addForm.isWeightProduct,
+            count: addForm.count,
+            barcode: addForm.barcode
+          })
+        "
+        :loading="createProductLoading"
+      />
 
-        <el-input
-          v-maska
-          data-maska="#############"
-          placeholder="Розничная цена"
-          v-model="modalForm.retailPrice"
-          class="dialog__input"
-        />
-
-        <el-input
-          v-maska
-          data-maska="#############"
-          placeholder="Цена закупа"
-          v-model="modalForm.price"
-          class="dialog__input"
-        />
-
-        <el-select
-          placeholder="Тип товара"
-          v-model="modalForm.typesId"
-          filterable
-          class="dialog__input"
-        >
-          <el-option v-for="item in types" :key="item.name" :label="item.name" :value="item.id" />
-        </el-select>
-
-        <div class="bottom">
-          <el-input-number
-            v-model="modalForm.count"
-            :min="0"
-            :max="100000"
-            placeholder="Количество"
-          />
-          <el-switch
-            v-model="modalForm.isWeightProduct"
-            active-text="кг"
-            inactive-text="шт"
-            class="dialog__switch"
-          />
-        </div>
-        <div class="dialog__actions">
-          <el-button type="info">Отменить</el-button>
-          <el-button
-            type="primary"
-            @click="
-              saveListener(
-                modalForm.name,
-                +modalForm.wholesalePrice!,
-                +modalForm.retailPrice!,
-                +modalForm.price!,
-                modalForm.isWeightProduct!,
-                modalForm.typesId!,
-                modalForm.barcode,
-                modalForm.count
-              )
-            "
-            :loading="createProductLoading"
-            :disabled="
-              !modalForm.name ||
-              !modalForm.wholesalePrice ||
-              !modalForm.retailPrice ||
-              !modalForm.price ||
-              !modalForm.typesId ||
-              !modalForm.barcode ||
-              !modalForm.count
-            "
-          >
-            Cохранить
-          </el-button>
-        </div>
-      </el-dialog>
+      <products-modal
+        title="Редактирование  продукта"
+        v-model="showEditModal"
+        v-model:modal-form="editForm"
+        @cancel="editForm = initDefaultFormWithId()"
+        @confirm="
+          editProduct({
+            id: editForm.id as number,
+            typesId: editForm.typesId!,
+            name: editForm.name,
+            wholesalePrice: +editForm.wholesalePrice,
+            retailPrice: +editForm.retailPrice,
+            price: +editForm.price,
+            isWeightProduct: editForm.isWeightProduct,
+            count: editForm.count,
+            barcode: editForm.barcode
+          })
+        "
+        :loading="editProductLoading"
+      />
     </div>
   </div>
 </template>
 <script lang="ts" setup>
-//@ts-ignore
-import * as api from '@/api/requests.ts'
-import type { Product } from '@/types'
-import { onMounted, reactive, computed } from 'vue'
-import { ref } from 'vue'
+import { reactive, onMounted, ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { ElNotification } from 'element-plus'
-import { vMaska } from 'maska'
 import { useTypes } from '@/composables/useTypes'
 import { useProducts } from '@/composables/useProducts'
+import type { Product } from '@/types'
+import type { ProductForm } from './ProductsModal.vue'
+import { useProductsCrud } from './useProductsCrud'
+
+import ProductsModal from './ProductsModal.vue'
 
 const route = useRoute()
 const pageSize = ref(10)
@@ -177,6 +131,42 @@ const filter = reactive<{ search: string; range: string[]; type: string }>({
 
 const { products, fetchProducts } = useProducts()
 const { types, fetchTypes } = useTypes()
+
+const {
+  createProduct,
+  createProductLoading,
+  deleteProduct,
+  deleteProductLoading,
+  editProduct,
+  editProductLoading
+} = useProductsCrud({
+  successCreateCallback: (newProduct) => {
+    products.value.push(newProduct)
+    addForm.value = initDefaultForm()
+    showAddModal.value = false
+  },
+  successDeleteCallback: (id: number) => {
+    products.value = products.value.filter((type) => type.id !== id)
+  },
+  successEditCallback: (newProduct) => {
+    const currentProduct = products.value.findIndex((type) => type.id === newProduct.id)
+    products.value[currentProduct].name = newProduct.name
+    products.value[currentProduct].wholesalePrice = newProduct.wholesalePrice
+    products.value[currentProduct].retailPrice = newProduct.retailPrice
+    products.value[currentProduct].price = newProduct.price
+    products.value[currentProduct].isWeightProduct = newProduct.isWeightProduct
+    products.value[currentProduct].typesId = newProduct.typesId
+    products.value[currentProduct].barcode = newProduct.barcode
+    products.value[currentProduct].count = newProduct.count
+    addForm.value = initDefaultForm()
+    showEditModal.value = false
+  }
+})
+
+onMounted(() => {
+  fetchProducts()
+  fetchTypes
+})
 
 const paginateProduct = (products: Product[]): Product[] => {
   const start = (currentPage.value - 1) * pageSize.value
@@ -207,215 +197,52 @@ const filteredProducts = computed(() => {
   return typedProduct(searchedProducts, filter.type)
 })
 
-const modalForm = reactive({
+const initDefaultForm = () => ({
   name: '',
   wholesalePrice: '',
   retailPrice: '',
   price: '',
   isWeightProduct: false,
-  typesId: null as number | null,
+  typesId: null,
   barcode: '',
   count: 0
 })
 
-const showModal = ref(false)
-
-const clearForm = () => {
-  modalForm.name = ''
-  modalForm.wholesalePrice = ''
-  modalForm.retailPrice = ''
-  modalForm.price = ''
-  modalForm.isWeightProduct = false
-  modalForm.typesId = null
-  modalForm.barcode = ''
-  modalForm.count = 0
-}
-
-const createProductLoading = ref(false)
-
-const createProduct = async (
-  name: string,
-  wholesalePrice: number,
-  retailPrice: number,
-  price: number,
-  isWeightProduct: boolean,
-  typesId: number,
-  barcode: string,
-  count: number
-) => {
-  try {
-    createProductLoading.value = true
-    const response = await api.createProduct(
-      name,
-      wholesalePrice,
-      retailPrice,
-      price,
-      isWeightProduct,
-      typesId,
-      barcode,
-      count
-    )
-    ElNotification({
-      title: 'Успех!',
-      message: 'Товар успешно создан',
-      type: 'success'
-    })
-    products.value.push(response.result.product)
-    clearForm()
-    showModal.value = false
-  } catch (e) {
-    console.error((e as any).message)
-    ElNotification({
-      title: 'Ошибка!',
-      message: 'Не удалось создать тип',
-      type: 'error'
-    })
-  } finally {
-    createProductLoading.value = false
-  }
-}
-
-const deleteProductLoading = ref(false)
-
-const deleteProduct = async (id: number) => {
-  try {
-    deleteProductLoading.value = true
-    await api.deleteProduct(id)
-    ElNotification({
-      title: 'Успех!',
-      message: 'Продукт успешно удален',
-      type: 'success'
-    })
-    products.value = products.value.filter((type) => type.id !== id)
-  } catch (e) {
-    console.error((e as any).message)
-    ElNotification({
-      title: 'Ошибка!',
-      message: 'Не удалось удалить продукт',
-      type: 'error'
-    })
-  } finally {
-    deleteProductLoading.value = false
-  }
-}
-
-let modalType: 'add' | 'edit' = 'add'
-let tempEditProduct: Product | null = null
-
-const editProductListener = (product: Product) => {
-  tempEditProduct = product
-  console.log(product)
-  modalForm.name = product.name
-  modalForm.isWeightProduct = product.isWeightProduct
-  modalForm.price = product.price.toString()
-  modalForm.retailPrice = product.retailPrice.toString()
-  modalForm.wholesalePrice = product.wholesalePrice.toString()
-  modalForm.typesId = product.typesId
-  modalForm.count = product.count
-  modalForm.barcode = product.barcode || ''
-  modalType = 'edit'
-  showModal.value = true
-}
-
-const addProductListener = () => {
-  tempEditProduct = null
-  clearForm()
-  modalType = 'add'
-  showModal.value = true
-}
-
-const saveListener = (
-  name: string,
-  wholesalePrice: number,
-  retailPrice: number,
-  price: number,
-  isWeightProduct: boolean,
-  typesId: number,
-  barcode: string,
-  count: number
-) => {
-  if (modalType === 'add') {
-    createProduct(
-      name,
-      wholesalePrice,
-      retailPrice,
-      price,
-      isWeightProduct,
-      typesId,
-      barcode,
-      count
-    )
-  } else {
-    editProduct(name, wholesalePrice, retailPrice, price, isWeightProduct, typesId, barcode, count)
-  }
-}
-
-const editProductLoading = ref(false)
-
-const editProduct = async (
-  name: string,
-  wholesalePrice: number,
-  retailPrice: number,
-  price: number,
-  isWeightProduct: boolean,
-  typesId: number,
-  barcode: string,
-  count: number
-) => {
-  try {
-    editProductLoading.value = true
-    const response = await api.editProduct(
-      tempEditProduct!.id,
-      name,
-      wholesalePrice,
-      retailPrice,
-      price,
-      isWeightProduct,
-      typesId,
-      barcode,
-      count
-    )
-    ElNotification({
-      title: 'Успех!',
-      message: 'Продукт успешно отредактирован',
-      type: 'success'
-    })
-    const currentProduct = products.value.findIndex(
-      (type) => type.id === response.result.product.id
-    )
-    products.value[currentProduct].name = name
-    products.value[currentProduct].wholesalePrice = wholesalePrice
-    products.value[currentProduct].retailPrice = retailPrice
-    products.value[currentProduct].price = price
-    products.value[currentProduct].isWeightProduct = isWeightProduct
-    products.value[currentProduct].typesId = typesId
-    products.value[currentProduct].barcode = barcode
-    products.value[currentProduct].count = count
-    clearForm()
-    showModal.value = false
-    tempEditProduct = null
-  } catch (e) {
-    console.error((e as any).message)
-    ElNotification({
-      title: 'Ошибка!',
-      message: 'Не удалось отредактировать товар',
-      type: 'error'
-    })
-  } finally {
-    editProductLoading.value = false
-  }
-}
-
-onMounted(() => {
-  fetchProducts()
-  fetchTypes()
+const initDefaultFormWithId = () => ({
+  ...initDefaultForm(),
+  id: null
 })
+
+const showAddModal = ref(false)
+const addForm = ref<ProductForm>(initDefaultForm())
+
+const showEditModal = ref(false)
+const editForm = ref<ProductForm & { id: number | null }>(initDefaultFormWithId())
+
+const setEditValues = (product: Product) => {
+  editForm.value.id = product.id
+  editForm.value.name = product.name
+  editForm.value.wholesalePrice = product.wholesalePrice.toString()
+  editForm.value.retailPrice = product.retailPrice.toString()
+  editForm.value.price = product.price.toString()
+  editForm.value.isWeightProduct = product.isWeightProduct
+  editForm.value.typesId = product.typesId
+  editForm.value.barcode = product.barcode
+  editForm.value.count = product.count
+  showEditModal.value = true
+}
+
+const totalPrice = computed(() =>
+  filteredProducts.value.reduce((sum: number, product: Product) => {
+    return sum + +product.price * +product.count
+  }, 0)
+)
 </script>
 <style lang="scss" scoped>
 .products {
-  padding: rem(35);
+  padding: rem(25) rem(25);
 
-  &__wrapper {
+  &__body {
     background: #fff;
     box-shadow:
       rgba(0, 0, 0, 0.1) 0px 1px 3px 0px,
@@ -428,32 +255,9 @@ onMounted(() => {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: rem(10);
-    margin-bottom: rem(35);
+    gap: gap(15);
+    margin-bottom: rem(15);
   }
-}
-
-.dialog {
-  &__input {
-    margin-bottom: rem(16);
-    width: 100%;
-  }
-
-  &__title {
-    margin-bottom: rem(25);
-  }
-}
-
-.dialog {
-  &__actions {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: rem(10);
-  }
-}
-
-.pagination {
-  margin-top: rem(20);
 }
 
 .filters {
@@ -472,13 +276,7 @@ onMounted(() => {
   }
 }
 
-.bottom {
-  display: flex;
-  align-items: center;
-  gap: rem(10);
-
-  &__select {
-    flex: 0 1 rem(300);
-  }
+.totalCount {
+  margin-bottom: rem(15);
 }
 </style>

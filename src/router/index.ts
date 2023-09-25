@@ -6,6 +6,7 @@ import Sell from '../views/admin/sell/Sell.vue'
 
 //@ts-ignore
 import Products from '../views/admin/products/Products.vue'
+
 //@ts-ignore
 import Types from '../views/admin/types/Types.vue'
 

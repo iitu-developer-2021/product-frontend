@@ -22,41 +22,12 @@ export const fetchProducts = (): Promise<Response<{ products: Product[] }>> =>
   axios.get(URLS.getProducts, {}).then((response) => response.data)
 
 export const createProduct = (
-  name: string,
-  wholesalePrice: number,
-  retailPrice: number,
-  price: number,
-  isWeightProduct: boolean,
-  typesId: number,
-  barcode: string,
-  count: number
+  product: Omit<Product, 'id'>
 ): Promise<Response<{ product: Product }>> =>
-  axios
-    .post(
-      URLS.createProducts,
-      { name, wholesalePrice, retailPrice, price, isWeightProduct, typesId, barcode, count },
-      {}
-    )
-    .then((response) => response.data)
+  axios.post(URLS.createProducts, product, {}).then((response) => response.data)
 
-export const editProduct = (
-  id: number,
-  name: string,
-  wholesalePrice: number,
-  retailPrice: number,
-  price: number,
-  isWeightProduct: boolean,
-  typesId: number,
-  barcode: string,
-  count: number
-): Promise<Response<{ product: Product }>> =>
-  axios
-    .put(
-      URLS.editProducts,
-      { id, name, wholesalePrice, retailPrice, price, isWeightProduct, typesId, barcode, count },
-      {}
-    )
-    .then((response) => response.data)
+export const editProduct = (product: Product): Promise<Response<{ product: Product }>> =>
+  axios.put(URLS.editProducts, product, {}).then((response) => response.data)
 
 export const deleteProduct = (id: number): Promise<Response<{ productId: number }>> =>
   axios.delete(URLS.deleteProducts + '/' + id, {}).then((response) => response.data)

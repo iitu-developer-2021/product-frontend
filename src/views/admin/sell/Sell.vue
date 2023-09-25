@@ -152,12 +152,9 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { vMaska } from 'maska'
-//@ts-ignore
-import { useSell } from './useSell.ts'
-//@ts-ignore
-import { useTypes } from '@/composables/useTypes.ts'
-//@ts-ignore
-import { useProducts } from '@/composables/useProducts.ts'
+import { useSell } from './useSell'
+import { useTypes } from '@/composables/useTypes'
+import { useProducts } from '@/composables/useProducts'
 
 const { fetchTypes, types, typesLoading } = useTypes()
 const { fetchProducts, products, productsLoading } = useProducts()

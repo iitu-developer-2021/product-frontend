@@ -3,11 +3,8 @@ import type { Ref } from 'vue'
 import moment from 'moment'
 import { ElNotification, ElMessageBox } from 'element-plus'
 import type { Product, Sell, Type } from '@/types'
-//@ts-ignore
-import * as api from '@/api/requests.ts'
-//@ts-ignore
+import * as api from '@/api/requests'
 import pdfMake from 'pdfmake/build/pdfmake'
-//@ts-ignore
 import pdfFonts from 'pdfmake/build/vfs_fonts'
 pdfMake.vfs = pdfFonts.pdfMake.vfs
 
