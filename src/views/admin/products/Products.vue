@@ -69,7 +69,7 @@
         title="Добавление нового продукта"
         v-model="showAddModal"
         v-model:modal-form="addForm"
-        @cancel="addForm = initDefaultForm()"
+        @cancel="(addForm = initDefaultForm()), (showAddModal = false)"
         @confirm="
           createProduct({
             typesId: addForm.typesId!,
@@ -89,7 +89,7 @@
         title="Редактирование  продукта"
         v-model="showEditModal"
         v-model:modal-form="editForm"
-        @cancel="editForm = initDefaultFormWithId()"
+        @cancel="(editForm = initDefaultFormWithId()), (showEditModal = false)"
         @confirm="
           editProduct({
             id: editForm.id as number,

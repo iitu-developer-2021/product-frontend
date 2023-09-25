@@ -17,7 +17,9 @@ const createDefaultSell = (id: number, isManual: boolean) => ({
   typeName: '',
   isWeightProduct: false,
   isManual: isManual,
-  remainedCount: 0
+  remainedCount: 0,
+  barcode: '',
+  productId: null as number | null
 })
 
 export const useSell = (products: Ref<Product[]>, types: Ref<Type[]>) => {
@@ -42,6 +44,8 @@ export const useSell = (products: Ref<Product[]>, types: Ref<Type[]>) => {
     sellList.value[currentSellIndex].typeName =
       types.value.find((type) => type.id === foundProduct?.typesId)?.name || ''
     sellList.value[currentSellIndex].remainedCount = foundProduct!.count
+    sellList.value[currentSellIndex].barcode = foundProduct?.barcode
+    sellList.value[currentSellIndex].productId = foundProduct?.id || null
   }
 
   const changePrices = () => {
@@ -102,7 +106,9 @@ export const useSell = (products: Ref<Product[]>, types: Ref<Type[]>) => {
             count: sellItem.count,
             typeName: types.value.find((type) => type.id === currentProduct.typesId)?.name || '',
             isWeightProduct: currentProduct.isWeightProduct,
-            clientSellsId: clientSellId
+            clientSellsId: clientSellId,
+            barcode: sellItem.barcode || '',
+            productId: sellItem.productId as number
           })
         } else {
           api.createSell({
@@ -112,7 +118,9 @@ export const useSell = (products: Ref<Product[]>, types: Ref<Type[]>) => {
             count: sellItem.count,
             typeName: '',
             isWeightProduct: sellItem.isWeightProduct,
-            clientSellsId: clientSellId
+            clientSellsId: clientSellId,
+            barcode: sellItem.barcode || '',
+            productId: sellItem.productId as number
           })
         }
       })
@@ -195,11 +203,22 @@ export const useSell = (products: Ref<Product[]>, types: Ref<Type[]>) => {
   const barcodeRef = ref()
 
   const addFromBarcode = (barcodeVal: string) => {
-    const foundProduct = products.value.find((product) => product.barcode === barcodeVal)
+    const foundProduct = products.value.find(
+      (product) => product.barcode === barcodeVal || product.barcode === `0${barcodeVal}`
+    )
     if (foundProduct) {
-      addSellFromBd()
-      const lastElementIndex = sellList.value.length - 1
-      selectGood(foundProduct.name, sellList.value[lastElementIndex].id)
+      const foundSellIndex = sellList.value.findIndex(
+        (sellItem) => sellItem.barcode === barcodeVal || sellItem.barcode === `0${barcodeVal}`
+      )
+
+      if (foundSellIndex !== -1) {
+        sellList.value[foundSellIndex].count = sellList.value[foundSellIndex].count + 1
+      } else {
+        addSellFromBd()
+        const lastElementIndex = sellList.value.length - 1
+        selectGood(foundProduct.name, sellList.value[lastElementIndex].id)
+      }
+
       barcode.value = ''
       barcodeRef.value.focus()
     } else {

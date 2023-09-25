@@ -24,6 +24,8 @@ export type Sell = {
   createdAt?: string
   updatedAt?: string
   remainedCount?: number
+  barcode?: string
+  productId: number | null
 }
 
 export type Type = {

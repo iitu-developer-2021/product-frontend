@@ -66,7 +66,9 @@ export const createSell = ({
   count,
   typeName,
   isWeightProduct,
-  clientSellsId
+  clientSellsId,
+  barcode,
+  productId
 }: {
   name: string
   sellPrice: number
@@ -75,6 +77,8 @@ export const createSell = ({
   typeName: string
   isWeightProduct: boolean
   clientSellsId: number
+  barcode: string
+  productId: number | null
 }) =>
   axios
     .post(
@@ -86,7 +90,9 @@ export const createSell = ({
         count,
         typeName,
         isWeightProduct,
-        clientSellsId
+        clientSellsId,
+        barcode,
+        productId
       },
       {}
     )
