@@ -3,7 +3,10 @@
     <div class="products__body">
       <div class="products__top">
         <h1 class="products__titles">Список типов товара</h1>
-        <el-button type="primary" @click="showAddModal = true"> Добавить тип </el-button>
+        <div>
+          <el-button type="primary" @click="showAddModal = true"> Добавить товар </el-button>
+          <el-button type="primary" @click="generateExcel"> Export в excel </el-button>
+        </div>
       </div>
       <div class="products__filters filters">
         <el-input class="filters__input" placeholder="Поиск" v-model="filter.search" />
@@ -116,6 +119,7 @@ import { useProducts } from '@/composables/useProducts'
 import type { Product } from '@/types'
 import type { ProductForm } from './ProductsModal.vue'
 import { useProductsCrud } from './useProductsCrud'
+import { read, utils, writeFileXLSX } from 'xlsx'
 
 import ProductsModal from './ProductsModal.vue'
 
@@ -237,6 +241,13 @@ const totalPrice = computed(() =>
     return sum + +product.price * +product.count
   }, 0)
 )
+
+const generateExcel = () => {
+  const ws = utils.json_to_sheet(products.value)
+  const wb = utils.book_new()
+  utils.book_append_sheet(wb, ws, 'Data')
+  writeFileXLSX(wb, 'SheetJSVueAoO.xlsx')
+}
 </script>
 <style lang="scss" scoped>
 .products {
