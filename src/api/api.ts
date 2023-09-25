@@ -4,6 +4,7 @@ import { withAbort } from './helpers/withAbort.ts'
 // @ts-ignore
 import { config } from '../config'
 import type { AxiosInstance } from 'axios'
+import router from '../router'
 
 const axiosInstance = axios.create({
   baseURL: config.BACKEND_URL,
@@ -29,5 +30,21 @@ axiosInstance.interceptors.request.use(function (config) {
 
   return config
 })
+
+axiosInstance.interceptors.response.use(
+  function (response) {
+    return response
+  },
+  function (error) {
+    if (error.response.status === 403) {
+      localStorage.removeItem('token')
+      router.push({
+        name: 'Login'
+      })
+    } else {
+      return Promise.reject(error)
+    }
+  }
+)
 
 export default createApi(axiosInstance)

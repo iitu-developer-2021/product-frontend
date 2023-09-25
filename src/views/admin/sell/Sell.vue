@@ -12,7 +12,7 @@
           class="sell__switch"
         />
 
-        <el-button type="primary" size="large" @click="addSellManual">
+        <el-button type="primary" size="large" @click="addSellManual" class="sell__button-add">
           Добавить товар вручную
         </el-button>
         <el-button type="primary" size="large" @click="addSellFromBd">
@@ -29,7 +29,7 @@
         class="sell__barcode"
         v-maska
         data-maska="#####################"
-        @paste="addFromBarcode($event.clipboardData.getData('text'))"
+        ref="barcodeRef"
       />
 
       <el-table
@@ -152,8 +152,11 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { vMaska } from 'maska'
+//@ts-ignore
 import { useSell } from './useSell.ts'
+//@ts-ignore
 import { useTypes } from '@/composables/useTypes.ts'
+//@ts-ignore
 import { useProducts } from '@/composables/useProducts.ts'
 
 const { fetchTypes, types, typesLoading } = useTypes()
@@ -175,7 +178,8 @@ const {
   completeSell,
   completeSellLoading,
   completeAndPrint,
-  addFromBarcode
+  addFromBarcode,
+  barcodeRef
 } = useSell(products, types)
 
 onMounted(() => {
@@ -242,9 +246,6 @@ onMounted(() => {
 
   &__field {
     flex: 0 0 rem(150);
-  }
-
-  &__result {
   }
 }
 </style>

@@ -23,16 +23,18 @@ export const fetchProducts = (): Promise<Response<{ products: Product[] }>> =>
 
 export const createProduct = (
   name: string,
-  wholesalePrice: string,
-  retailPrice: string,
-  price: string,
+  wholesalePrice: number,
+  retailPrice: number,
+  price: number,
   isWeightProduct: boolean,
-  typesId: number
+  typesId: number,
+  barcode: string,
+  count: number
 ): Promise<Response<{ product: Product }>> =>
   axios
     .post(
       URLS.createProducts,
-      { name, wholesalePrice, retailPrice, price, isWeightProduct, typesId },
+      { name, wholesalePrice, retailPrice, price, isWeightProduct, typesId, barcode, count },
       {}
     )
     .then((response) => response.data)
@@ -40,16 +42,18 @@ export const createProduct = (
 export const editProduct = (
   id: number,
   name: string,
-  wholesalePrice: string,
-  retailPrice: string,
-  price: string,
+  wholesalePrice: number,
+  retailPrice: number,
+  price: number,
   isWeightProduct: boolean,
-  typesId: number
+  typesId: number,
+  barcode: string,
+  count: number
 ): Promise<Response<{ product: Product }>> =>
   axios
-    .post(
+    .put(
       URLS.editProducts,
-      { id, name, wholesalePrice, retailPrice, price, isWeightProduct, typesId },
+      { id, name, wholesalePrice, retailPrice, price, isWeightProduct, typesId, barcode, count },
       {}
     )
     .then((response) => response.data)
@@ -94,9 +98,9 @@ export const createSell = ({
   clientSellsId
 }: {
   name: string
-  sellPrice: string
-  productPrice: string
-  count: string
+  sellPrice: number
+  productPrice: number
+  count: number
   typeName: string
   isWeightProduct: boolean
   clientSellsId: number

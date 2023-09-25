@@ -1,11 +1,10 @@
 export type Product = {
   id: number
-  imageId?: number
   typesId: number
   name: string
-  wholesalePrice: string
-  retailPrice: string
-  price: string
+  wholesalePrice: number
+  retailPrice: number
+  price: number
   isWeightProduct: boolean
   count: number
   barcode?: string
@@ -16,8 +15,8 @@ export type Product = {
 export type Sell = {
   id: number
   name: string
-  sellPrice: string
-  productPrice: string
+  sellPrice: number
+  productPrice: number
   count: number
   typeName: string
   isWeightProduct: boolean

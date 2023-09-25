@@ -1,4 +1,4 @@
-import { ref, computed, nextTick } from 'vue'
+import { ref, computed } from 'vue'
 import type { Ref } from 'vue'
 import moment from 'moment'
 import { ElNotification, ElMessageBox } from 'element-plus'
@@ -15,8 +15,8 @@ const createDefaultSell = (id: number, isManual: boolean) => ({
   id,
   name: '',
   count: 1,
-  sellPrice: '0',
-  productPrice: '',
+  sellPrice: 0,
+  productPrice: 0,
   typeName: '',
   isWeightProduct: false,
   isManual: isManual,
@@ -38,13 +38,13 @@ export const useSell = (products: Ref<Product[]>, types: Ref<Type[]>) => {
     const foundProduct = products.value.find((product) => product.name === productName)
     sellList.value[currentSellIndex].name = foundProduct?.name || ''
     sellList.value[currentSellIndex].isWeightProduct = foundProduct?.isWeightProduct || false
-    sellList.value[currentSellIndex].productPrice = foundProduct?.price || ''
+    sellList.value[currentSellIndex].productPrice = +foundProduct!.price
     sellList.value[currentSellIndex].sellPrice = isWholesellPrice.value
-      ? foundProduct?.wholesalePrice!
-      : foundProduct?.retailPrice!
+      ? +foundProduct?.wholesalePrice!
+      : +foundProduct?.retailPrice!
     sellList.value[currentSellIndex].typeName =
       types.value.find((type) => type.id === foundProduct?.typesId)?.name || ''
-    sellList.value[currentSellIndex].remainedCount = foundProduct?.count || 0
+    sellList.value[currentSellIndex].remainedCount = foundProduct!.count
   }
 
   const changePrices = () => {
@@ -54,8 +54,8 @@ export const useSell = (products: Ref<Product[]>, types: Ref<Type[]>) => {
         return {
           ...sell,
           sellPrice: isWholesellPrice.value
-            ? currentProduct.wholesalePrice
-            : currentProduct.retailPrice
+            ? +currentProduct.wholesalePrice
+            : +currentProduct.retailPrice
         }
       } else {
         return sell
@@ -100,9 +100,9 @@ export const useSell = (products: Ref<Product[]>, types: Ref<Type[]>) => {
         if (currentProduct) {
           return api.createSell({
             name: sellItem.name,
-            sellPrice: sellItem.sellPrice,
-            productPrice: currentProduct.price,
-            count: sellItem.count.toString(),
+            sellPrice: +sellItem.sellPrice,
+            productPrice: +currentProduct.price,
+            count: sellItem.count,
             typeName: types.value.find((type) => type.id === currentProduct.typesId)?.name || '',
             isWeightProduct: currentProduct.isWeightProduct,
             clientSellsId: clientSellId
@@ -110,9 +110,9 @@ export const useSell = (products: Ref<Product[]>, types: Ref<Type[]>) => {
         } else {
           api.createSell({
             name: sellItem.name,
-            sellPrice: sellItem.sellPrice,
-            productPrice: sellItem.sellPrice,
-            count: sellItem.count.toString(),
+            sellPrice: +sellItem.sellPrice,
+            productPrice: +sellItem.sellPrice,
+            count: sellItem.count,
             typeName: '',
             isWeightProduct: sellItem.isWeightProduct,
             clientSellsId: clientSellId
@@ -195,6 +195,7 @@ export const useSell = (products: Ref<Product[]>, types: Ref<Type[]>) => {
   }
 
   const barcode = ref('')
+  const barcodeRef = ref()
 
   const addFromBarcode = (barcodeVal: string) => {
     const foundProduct = products.value.find((product) => product.barcode === barcodeVal)
@@ -202,9 +203,8 @@ export const useSell = (products: Ref<Product[]>, types: Ref<Type[]>) => {
       addSellFromBd()
       const lastElementIndex = sellList.value.length - 1
       selectGood(foundProduct.name, sellList.value[lastElementIndex].id)
-      nextTick(() => {
-        barcode.value = ''
-      })
+      barcode.value = ''
+      barcodeRef.value.focus()
     } else {
       ElMessageBox.alert('Продукт по штрих коду не найден', 'Внимание!!!', {
         confirmButtonText: 'OK',
@@ -228,6 +228,7 @@ export const useSell = (products: Ref<Product[]>, types: Ref<Type[]>) => {
     completeSellLoading,
     completeSell,
     completeAndPrint,
-    addFromBarcode
+    addFromBarcode,
+    barcodeRef
   }
 }

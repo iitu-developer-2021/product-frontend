@@ -2,20 +2,21 @@ import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteLocationNormalized, NavigationGuardNext } from 'vue-router'
 
 //@ts-ignore
-import Sell from '../views/sell/Sell.vue'
+import Sell from '../views/admin/sell/Sell.vue'
 
 //@ts-ignore
-import Products from '../views/Products.vue'
+import Products from '../views/admin/products/Products.vue'
 //@ts-ignore
-import Types from '../views/Types.vue'
-//@ts-ignore
-import SellList from '../views/SellList.vue'
+import Types from '../views/admin/types/Types.vue'
 
 //@ts-ignore
-import Admin from '../views/Admin.vue'
+import SellList from '../views/admin/sell-list/SellList.vue'
 
 //@ts-ignore
-import Login from '../views/Login.vue'
+import Admin from '../views/admin/Admin.vue'
+
+//@ts-ignore
+import Login from '../views/login/Login.vue'
 
 const withAuth = (
   to: RouteLocationNormalized,
