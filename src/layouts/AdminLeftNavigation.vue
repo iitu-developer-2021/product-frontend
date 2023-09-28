@@ -129,12 +129,11 @@ const leftNavigationItems = computed(() => [
   position: fixed;
   width: rem(65);
   height: 100%;
-  border-right: rem(1) solid var(--color-border-light);
   background: var(--colors-bg-primary);
   transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow:
-    rgba(0, 0, 0, 0.16) rem(0) rem(3) rem(6),
-    rgba(0, 0, 0, 0.23) rem(0) rem(3) rem(6);
+  box-shadow: rgba(0, 0, 0, 0.16) 0 rem(1) rem(4);
+  border-right: rem(1) solid transparent;
+  z-index: 2;
 
   &--active {
     width: rem(300);

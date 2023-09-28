@@ -5,7 +5,10 @@
       @toggle-show-sidebar="showSidebarMenu = $event"
     />
     <div class="main-content" :class="{ 'main-content--active': showSidebarMenu }">
-      <admin-top />
+      <admin-top
+        class="main-content__header"
+        :class="{ 'main-content__header--active': showSidebarMenu }"
+      />
       <main class="main-content__body" ref="mainContentBodyRef">
         <slot></slot>
       </main>
