@@ -1,28 +1,36 @@
 <template>
-  <header class="top-navigation">
-    <div class="top-navigation__actions top-actions">
-      <div class="top-actions__user">
-        <el-tooltip placement="bottom" content="Меню" :show-after="150">
-          <el-dropdown trigger="click">
-            <el-button type="primary" size="small" class="top-actions__avatar" icon-type round>
-              NA
-            </el-button>
+  <transition name="slide-fade">
+    <header
+      class="top-navigation"
+      v-if="showHeader"
+      :class="{ 'top-navigation--scrolled': showBoxShadow }"
+    >
+      <div class="top-navigation__actions top-actions">
+        <div class="top-actions__user">
+          <el-tooltip placement="bottom" content="Меню" :show-after="150">
+            <el-dropdown trigger="click">
+              <el-button type="primary" size="small" class="top-actions__avatar" icon-type round>
+                NA
+              </el-button>
 
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item @click="logout">Выйти</el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-        </el-tooltip>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item @click="logout">Выйти</el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+          </el-tooltip>
+        </div>
       </div>
-    </div>
-  </header>
+    </header>
+  </transition>
 </template>
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
+import { useScroll } from '@/composables/useScroll'
 
 const router = useRouter()
+const { showBoxShadow, showHeader } = useScroll()
 
 const logout = () => {
   localStorage.removeItem('token')
@@ -39,11 +47,15 @@ const logout = () => {
   display: flex;
   align-items: center;
   gap: rem(20);
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: rem(65);
+  right: 0;
   z-index: 100;
+  transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  border-left: rem(1) solid var(--colors-border-default);
 
-  &.scrolled {
+  &--scrolled {
     box-shadow: 0 rem(1) rem(4) rgba(0, 0, 0, 0.16);
   }
 
@@ -177,5 +189,18 @@ const logout = () => {
     top: rem(48);
     right: 0;
   }
+}
+
+.slide-fade-enter-active {
+  transition: all 0.1s ease-out;
+}
+
+.slide-fade-leave-active {
+  transition: all 0.1s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateY(rem(-30));
 }
 </style>

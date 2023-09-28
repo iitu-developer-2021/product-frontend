@@ -2,48 +2,48 @@
   <div class="sell">
     <div class="sell__body">
       <h1 class="sell__title">Продать товар</h1>
+      <div class="sell__sticky">
+        <div class="sell__actions">
+          <el-switch
+            v-model="isWholesellPrice"
+            @change="changePrices"
+            active-text="Оптом"
+            inactive-text="Розницу"
+            class="sell__switch"
+          />
 
-      <div class="sell__actions">
-        <el-switch
-          v-model="isWholesellPrice"
-          @change="changePrices"
-          active-text="Оптом"
-          inactive-text="Розницу"
-          class="sell__switch"
+          <el-button
+            type="primary"
+            size="large"
+            class="sell__button-add"
+            @click="addSellManual"
+            :disabled="typesLoading || productsLoading"
+          >
+            Добавить товар вручную
+          </el-button>
+
+          <el-button
+            type="primary"
+            size="large"
+            @click="addSellFromBd"
+            :disabled="typesLoading || productsLoading"
+          >
+            Добавить товар c бд
+          </el-button>
+          <el-button type="danger" size="large">Очистить все</el-button>
+        </div>
+
+        <el-input
+          ref="barcodeRef"
+          v-model="barcode"
+          @keydown.enter.stop="addFromBarcode(barcode)"
+          size="large"
+          placeholder="Введите или отсканируйте штрих код"
+          class="sell__barcode"
+          v-maska
+          data-maska="#####################"
         />
-
-        <el-button
-          type="primary"
-          size="large"
-          class="sell__button-add"
-          @click="addSellManual"
-          :disabled="typesLoading || productsLoading"
-        >
-          Добавить товар вручную
-        </el-button>
-
-        <el-button
-          type="primary"
-          size="large"
-          @click="addSellFromBd"
-          :disabled="typesLoading || productsLoading"
-        >
-          Добавить товар c бд
-        </el-button>
-        <el-button type="danger" size="large">Очистить все</el-button>
       </div>
-
-      <el-input
-        ref="barcodeRef"
-        v-model="barcode"
-        @keydown.enter.stop="addFromBarcode(barcode)"
-        size="large"
-        placeholder="Введите или отсканируйте штрих код"
-        class="sell__barcode"
-        v-maska
-        data-maska="#####################"
-      />
-
       <el-table empty-text="Добавьте товар, чтобы начать" :data="sellList">
         <el-table-column label="№" width="50">
           <template #default="{ $index }"> {{ $index + 1 }}</template>
@@ -144,17 +144,24 @@
 </template>
 <script lang="ts" setup>
 import { ref, onMounted, computed, nextTick } from 'vue'
+//@ts-ignore
 import { v4 as uuidv4 } from 'uuid'
 import { vMaska } from 'maska'
 import { useTypes } from '@/composables/useTypes'
 import { useProducts } from '@/composables/useProducts'
+import * as api from '@/api/requests'
+import moment from 'moment'
+import { ElMessageBox, ElNotification } from 'element-plus'
+import pdfMake from 'pdfmake/build/pdfmake'
+import pdfFonts from 'pdfmake/build/vfs_fonts'
+pdfMake.vfs = pdfFonts.pdfMake.vfs
 
 type SellItem = {
   id: string
-  productId: string | null
+  productId: number | null
   name: string
   count: number
-  sellPrice: number
+  sellPrice: string | number
   productPrice: number
   typeName: string
   isWeightProduct: boolean
@@ -179,14 +186,13 @@ const money = ref('')
 const barcode = ref('')
 const barcodeRef = ref()
 const isWholesellPrice = ref(false)
-const sellList = ref<Sell[]>([])
+const sellList = ref<SellItem[]>([])
 
 const addSellFromBd = () => {
   const createdSellItem = createSellItem(false)
   sellList.value.push(createdSellItem)
   nextTick(() => {
-    console.log('called to bottom')
-    window.scrollTo(0, document.body.scrollHeight)
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
   })
   return createdSellItem.id
 }
@@ -195,7 +201,7 @@ const addSellManual = () => {
   const createdSellItem = createSellItem(true)
   sellList.value.push(createdSellItem)
   nextTick(() => {
-    window.scrollTo(0, document.body.scrollHeight)
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
   })
   return createdSellItem.id
 }
@@ -213,7 +219,7 @@ const selectGood = (productId: number, sellId: string) => {
     sellList.value[currentSellIndex].sellPrice = isWholesellPrice.value
       ? foundProduct.wholesalePrice
       : foundProduct.retailPrice
-    sellList.value[currentSellIndex].barcode = foundProduct.barcode
+    sellList.value[currentSellIndex].barcode = foundProduct.barcode || ''
     sellList.value[currentSellIndex].typeName =
       types.value.find((type) => type.id === foundProduct?.typesId)?.name || ''
     sellList.value[currentSellIndex].productId = foundProduct.id
@@ -437,6 +443,16 @@ onMounted(() => {
 
   &__select {
     width: 100%;
+  }
+
+  &__sticky {
+    position: sticky;
+    top: rem(0);
+    z-index: 100;
+    background: #fff;
+    padding: rem(15);
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px 0px;
+    margin-bottom: rem(15);
   }
 }
 

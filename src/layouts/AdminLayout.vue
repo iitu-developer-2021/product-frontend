@@ -30,9 +30,8 @@ const mainContentBodyRef = ref()
   width: calc(100% - 65px);
   min-height: 100vh;
   transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  overflow: hidden;
   left: rem(65);
-  background: #f8f7fa;
+  background-color: var(--colors-bg-main);
 
   &--active {
     width: calc(100% - 300px);
@@ -40,9 +39,13 @@ const mainContentBodyRef = ref()
   }
 
   &__body {
-    background-color: var(--colors-bg-main);
-    height: calc(100vh - 48px);
-    overflow: auto;
+    margin-top: rem(48);
+  }
+
+  &__header {
+    &--active {
+      left: rem(301);
+    }
   }
 }
 
