@@ -58,6 +58,7 @@ const router = createRouter({
           name: 'Sell',
           component: Sell
         },
+
         {
           path: 'products',
           name: 'Products',

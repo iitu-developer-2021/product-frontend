@@ -24,6 +24,7 @@
     "pdfmake": "^0.2.7",
     "pinia": "^2.1.6",
     "sass": "^1.66.1",
+    "uuid": "^9.0.1",
     "v-mask": "^2.3.0",
     "vite-plugin-svg-icons": "^2.0.1",
     "vue": "^3.3.4",
