@@ -36,6 +36,7 @@
         <el-table-column prop="wholesalePrice" label="Оптовая цена" />
         <el-table-column prop="retailPrice" label="Розничная цена" />
         <el-table-column prop="typesId" label="Тип продукта" />
+        <el-table-column prop="isWeightProduct" label="Измерение" />
         <el-table-column align="right" width="100">
           <template #default="{ row }">
             <el-button size="small" type="danger" @click="deleteProduct(row.id)">
@@ -124,7 +125,8 @@ const uploadProduct = async () => {
       price: tableItem.price,
       wholesalePrice: tableItem.wholesalePrice,
       retailPrice: tableItem.retailPrice,
-      typesId: tableItem.typesId
+      typesId: tableItem.typesId,
+      isWeightProduct: tableItem.isWeightProduct
     }))
 
     await api.uploadProducts(mappedTableData)
