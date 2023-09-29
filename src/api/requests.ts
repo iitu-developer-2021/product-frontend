@@ -15,7 +15,8 @@ const URLS = {
   deleteClientSells: '/clientSells',
   getClientSells: '/clientSells',
   createSell: '/sells',
-  login: '/login'
+  login: '/login',
+  uploadProducts: '/upload-products'
 }
 
 export const fetchProducts = (): Promise<Response<{ products: Product[] }>> =>
@@ -97,3 +98,8 @@ export const createSell = ({
       {}
     )
     .then((response) => response.data)
+
+export const uploadProducts = (
+  products: Product[]
+): Promise<Response<{ createdProducts: Product[] }>> =>
+  axios.post(URLS.uploadProducts, products, {}).then((response) => response.data)

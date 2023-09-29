@@ -121,6 +121,18 @@ const leftNavigationItems = computed(() => [
         name: 'Products'
       })
     }
+  },
+  {
+    name: 'Добавление продукта',
+    icon: 'excel-file',
+    iconSize: '25px',
+    show: true,
+    routeName: 'ProductsExcel',
+    clickHandler: () => {
+      router.push({
+        name: 'ProductsExcel'
+      })
+    }
   }
 ])
 </script>

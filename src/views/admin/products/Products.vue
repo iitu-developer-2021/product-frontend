@@ -129,7 +129,7 @@ import { useProducts } from '@/composables/useProducts'
 import type { Product } from '@/types'
 import type { ProductForm } from './ProductsModal.vue'
 import { useProductsCrud } from './useProductsCrud'
-import { read, utils, writeFileXLSX } from 'xlsx'
+import { utils, writeFileXLSX } from 'xlsx'
 
 import ProductsModal from './ProductsModal.vue'
 

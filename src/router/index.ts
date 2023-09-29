@@ -5,6 +5,9 @@ import type { RouteLocationNormalized, NavigationGuardNext } from 'vue-router'
 import Sell from '../views/admin/sell/Sell.vue'
 
 //@ts-ignore
+import ProductExcel from '../views/admin/product-add-excel/ProductAddExcel.vue'
+
+//@ts-ignore
 import Products from '../views/admin/products/Products.vue'
 
 //@ts-ignore
@@ -63,6 +66,11 @@ const router = createRouter({
           path: 'products',
           name: 'Products',
           component: Products
+        },
+        {
+          path: 'products-excel',
+          name: 'ProductsExcel',
+          component: ProductExcel
         },
         {
           path: 'sell-list',
