@@ -21,32 +21,14 @@
         </el-select>
       </div>
 
-      <div class="prices">
-        <h3 class="totalCount">
-          Цена за оборот: <strong>{{ totalPrice.toFixed(2) }}</strong>
-        </h3>
-
-        <h3 class="totalCount">
-          Цена за розницу: <strong>{{ totalPriceWithBenefit.toFixed(2) }}</strong>
-        </h3>
-
-        <h3 class="totalCount">
-          Цена за оптом: <strong>{{ totalPriceWholesale.toFixed(2) }}</strong>
-        </h3>
-      </div>
-
       <el-table :data="paginateProduct(filteredProducts)" height="500" empty-text="Таблица пустая">
-        <el-table-column prop="id" label="ID" width="50" />
+        <el-table-column prop="id" label="ID" width="70" />
         <el-table-column prop="barcode" label="Штрих код" />
-        <el-table-column prop="name" label="Название товара" width="300" />
+        <el-table-column prop="name" label="Название товара" width="450" />
         <el-table-column prop="price" label="Цена закупа" />
         <el-table-column prop="wholesalePrice" label="Оптовая цена" />
         <el-table-column prop="retailPrice" label="Розничная цена" />
-        <el-table-column prop="isWeightProduct" label="Остаток">
-          <template #default="scope">
-            {{ scope.row.count }}{{ scope.row.isWeightProduct ? 'кг' : 'шт' }}
-          </template>
-        </el-table-column>
+
         <el-table-column align="right" width="220">
           <template #default="scope">
             <el-button size="small" @click="setEditValues(scope.row)"> Редактировать </el-button>
@@ -179,7 +161,7 @@ const {
 
 onMounted(() => {
   fetchProducts()
-  fetchTypes
+  fetchTypes()
 })
 
 const paginateProduct = (products: Product[]): Product[] => {
@@ -246,24 +228,6 @@ const setEditValues = (product: Product) => {
   showEditModal.value = true
 }
 
-const totalPrice = computed(() =>
-  filteredProducts.value.reduce((sum: number, product: Product) => {
-    return sum + +product.price * +product.count
-  }, 0)
-)
-
-const totalPriceWithBenefit = computed(() =>
-  filteredProducts.value.reduce((sum: number, product: Product) => {
-    return sum + +product.wholesalePrice * +product.count
-  }, 0)
-)
-
-const totalPriceWholesale = computed(() =>
-  filteredProducts.value.reduce((sum: number, product: Product) => {
-    return sum + +product.wholesalePrice * +product.count
-  }, 0)
-)
-
 const generateExcel = () => {
   const ws = utils.json_to_sheet(products.value)
   const wb = utils.book_new()
@@ -311,12 +275,6 @@ const generateExcel = () => {
 
 .totalCount {
   margin-bottom: rem(15);
-}
-
-.prices {
-  display: flex;
-  align-items: center;
-  gap: rem(20);
 }
 
 .pagination {

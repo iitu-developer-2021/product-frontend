@@ -37,6 +37,7 @@ export type ClientSell = {
   id: number
   name: string
   sells?: Sell[]
+  totalPrice: number
   createdAt?: string
   updatedAt?: string
 }

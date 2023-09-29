@@ -15,6 +15,11 @@
         </div>
       </div>
 
+      <div class="summary">
+        <p class="summary__total-fund">Оборот: {{ totalFund }}</p>
+        <p class="summary__benefit">Чистая прибыль: {{ totalBenefit }}</p>
+      </div>
+
       <el-table
         :data="clientSellsWithPagination"
         :border="true"
@@ -161,6 +166,23 @@ const deleteClientSell = async (id: number) => {
   }
 }
 
+const totalFund = computed(() =>
+  clientSellsWithDateRange.value.reduce((sum, clientSell) => sum + clientSell.totalPrice, 0)
+)
+
+const totalBenefit = computed(() =>
+  clientSellsWithDateRange.value.reduce((sum, clientSell) => {
+    const totalSellBenefit =
+      clientSell.sells?.reduce(
+        (benefitSum, sellItem) =>
+          benefitSum + sellItem.count * sellItem.sellPrice - sellItem.count * sellItem.productPrice,
+        0
+      ) || 0
+
+    return sum + Math.ceil(totalSellBenefit)
+  }, 0)
+)
+
 onMounted(() => {
   fetchClientSells()
 })
@@ -205,5 +227,19 @@ onMounted(() => {
 
 .pagination {
   margin-top: rem(20);
+}
+
+.summary {
+  &__total-fund,
+  &__benefit {
+    font-size: rem(19);
+    font-weight: bold;
+    line-height: rem(22);
+    margin-bottom: rem(10);
+  }
+
+  &__benefit {
+    margin-bottom: rem(15);
+  }
 }
 </style>
