@@ -129,7 +129,8 @@ const uploadProduct = async () => {
       price: tableItem.price,
       wholesalePrice: tableItem.wholesalePrice,
       retailPrice: tableItem.retailPrice,
-      typesId: tableItem.typesId
+      typesId: tableItem.typesId,
+      isWeightProduct: tableItem.isWeightProduct
     }))
 
     await api.uploadProducts(mappedTableData)
