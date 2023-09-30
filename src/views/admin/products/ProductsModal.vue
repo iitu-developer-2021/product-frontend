@@ -123,8 +123,7 @@ const disableConfirmButton = computed(
     !props.modalForm.wholesalePrice ||
     !props.modalForm.retailPrice ||
     !props.modalForm.price ||
-    !props.modalForm.typesId ||
-    !props.modalForm.barcode
+    !props.modalForm.typesId
 )
 
 const updateForm = (key: string, value: string) => {

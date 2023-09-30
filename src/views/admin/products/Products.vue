@@ -24,11 +24,15 @@
       <el-table :data="paginateProduct(filteredProducts)" height="500" empty-text="Таблица пустая">
         <el-table-column prop="id" label="ID" width="70" />
         <el-table-column prop="barcode" label="Штрих код" />
-        <el-table-column prop="name" label="Название товара" width="450" />
+        <el-table-column prop="name" label="Название товара" width="400" />
         <el-table-column prop="price" label="Цена закупа" />
         <el-table-column prop="wholesalePrice" label="Оптовая цена" />
         <el-table-column prop="retailPrice" label="Розничная цена" />
-
+        <el-table-column label="Измерение" >
+          <template #default="scope">
+            {{  scope.row.isWeightProduct ? 'кг' : 'шт' }}
+            </template>
+          </el-table-column>
         <el-table-column align="right" width="220">
           <template #default="scope">
             <el-button size="small" @click="setEditValues(scope.row)"> Редактировать </el-button>
