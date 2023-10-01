@@ -265,8 +265,13 @@ const restrictContinue = computed(
 )
 
 const addFromBarcode = (barcodeVal: string) => {
+  if(!barcodeVal) return
+  
   const foundProduct = products.value.find(
-    (product) => product.barcode === barcodeVal || product.barcode === `0${barcodeVal}`
+    (product) =>{
+      console.log( product.barcode === barcodeVal, product.barcode === `0${barcodeVal}`)
+     return  product.barcode === barcodeVal || product.barcode === `0${barcodeVal}`
+    }
   )
 
   if (foundProduct) {
